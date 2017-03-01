@@ -3,6 +3,7 @@ package com.example.mike.yahooweather;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -32,6 +33,8 @@ public class MainActivity extends AppCompatActivity {
     private static final int MY_PERMISSION_ACCESS_COURSE_LOCATION = 0;
     private static final int MY_PERMISSION_ACCESS_FINE_LOCATION = 1;
     private static final int MY_PERMISSION_INTERNET = 2;
+    private static LocationListener mListener;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,8 +65,43 @@ public class MainActivity extends AppCompatActivity {
             return  ;
         }
 
+        /*
+        mListener = new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+                // Previously mock location is cleared.
+                // getLastKnownLocation(LocationManager.GPS_PROVIDER); will not return mock location.
+            }
+        };
+        */
+
+        mListener = new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+
+            }
+
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+
+            }
+
+            @Override
+            public void onProviderEnabled(String provider) {
+
+            }
+
+            @Override
+            public void onProviderDisabled(String provider) {
+
+            }
+        };
+
         LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+
+        lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mListener);
         Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
         double longitude = location.getLongitude();
         double latitude = location.getLatitude();
 
@@ -78,16 +116,7 @@ public class MainActivity extends AppCompatActivity {
 
         TestAsyncTask testAsyncTask = new TestAsyncTask(MainActivity.this, data, longitude, latitude);
         testAsyncTask.execute();
-/*
-        try {
-            String rawJSON = testAsyncTask.returnJSON();
-            JSONObject json = new JSONObject(rawJSON);
-        }
-        catch (JSONException e){
-            //If there is an issue with parsing the JSON, throws an exception
-            throw new RuntimeException(e);
-        }
-*/
+
     }
 
     public class TestAsyncTask extends AsyncTask<Void, Void, String> {
