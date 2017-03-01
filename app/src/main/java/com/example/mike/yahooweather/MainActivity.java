@@ -74,11 +74,25 @@ public class MainActivity extends AppCompatActivity {
             }
         };
         */
+        LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
 
         mListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
+                double longitude = location.getLongitude();
+                double latitude = location.getLatitude();
 
+                //Test Coordinates for New York City, NY
+                //longitude = -74.0059;
+                //latitude = 40.7128;
+
+                HttpURLConnection connection = null;
+                BufferedReader reader = null;
+                String data = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + Double.toString(latitude) + "," + Double.toString(longitude) + "&key=AIzaSyAi9bRJzDHsfgwA08E42r5DCzh3nNerkno";
+
+
+                TestAsyncTask testAsyncTask = new TestAsyncTask(MainActivity.this, data, longitude, latitude);
+                testAsyncTask.execute();
             }
 
             @Override
@@ -97,25 +111,11 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-
-        lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mListener);
-        Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-
-        double longitude = location.getLongitude();
-        double latitude = location.getLatitude();
-
-        //Test Coordinates for New York City, NY
-        //longitude = -74.0059;
-        //latitude = 40.7128;
-
-        HttpURLConnection connection = null;
-        BufferedReader reader = null;
-        String data = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + Double.toString(latitude) + "," + Double.toString(longitude) + "&key=AIzaSyAi9bRJzDHsfgwA08E42r5DCzh3nNerkno";
+        lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, mListener);
 
 
-        TestAsyncTask testAsyncTask = new TestAsyncTask(MainActivity.this, data, longitude, latitude);
-        testAsyncTask.execute();
+
+
 
     }
 
